@@ -1,0 +1,16 @@
+﻿(fileId as text) =>
+    let
+        response = Web.Contents(
+            "https://www.googleapis.com",
+            [
+                RelativePath = "drive/v3/files/" & fileId,
+                Query = 
+                    [
+                        fields = "mimeType",
+                        supportsAllDrives = "true"
+                    ]
+            ]
+        ),
+        fileType = Json.Document(response)[mimeType]
+    in
+        fileType

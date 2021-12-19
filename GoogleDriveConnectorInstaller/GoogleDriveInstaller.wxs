@@ -1,0 +1,77 @@
+<?xml version='1.0' encoding='Windows-1252'?>
+
+<!--
+	You have to manually edit the Id.
+	It wasn't set to '*' to protect me from me.
+-->
+<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
+	<Product
+	  UpgradeCode='6B923F19-3C90-4C36-ADB2-025BBB82AE46'
+	  Name='Google Drive Connector' Manufacturer='Open Source (github/JaySumners)'
+	  Language='1033' Codepage='1252'
+	  Version='0.0.1'
+	  Id='ACC3A30D-B391-47D1-ABCF-4DE15097CA82'>
+
+		<!--Package Description-->
+		<Package Id='*' Keywords='Installer' Description="Google Drive Connector Installer"
+		  Comments='Connector is open source software under MIT license. Compatibility is not guaranteed. Use at your own risk. Google Drive is a trademark of Google Inc. Use of this trademark is subject to Google Permissions.' Manufacturer='Acme Ltd.'
+		  InstallerVersion='100' Languages='1033' Compressed='yes' SummaryCodepage='1252' />
+
+		<!--Install at User Level-->
+		<Property Id="ALLUSERS" Value="0"/>
+
+		<!--Split Media (Just in Case)-->
+		<Media Id='1' Cabinet='GDC.cab' EmbedCab='yes' DiskPrompt="CD-ROM #1" />
+		<Property Id='DiskPrompt' Value="Google Drive Connector Installation [1]" />
+
+		<!--Installation Instructions-->
+		<Directory Id='TARGETDIR' Name='SourceDir'>
+			<!--Installation Location-->
+			<!--Helps with repair if items in Documents gets deleted-->
+			<Directory Id='PersonalFolder' Name='PFolder'>
+				<Directory Id='PBD' Name='Power BI Desktop'>
+					<Directory Id='INSTALLDIR' Name='Custom Connectors'>
+
+						<Component Id='InstalledMez' Guid='26709C78-3B41-4E2D-B028-1B9B3E36C1E6'>
+
+							<!--Source is Hard Coded to Debug-->
+							<File Source ='..\GoogleDriveConnector\bin\Debug\GoogleDriveConnector.mez'
+								  Id='InstalledGoogleDriveMEZ' Name='GoogleDrive.mez'
+								  DiskId='1'>
+							</File>
+
+							<RemoveFile Id="InstalledGoogleDriveMEZ" Name='GoogleDrive.mez' On='uninstall' />
+
+							<RegistryKey Root='HKCU' Key='Software\[Manufacturer]\[ProductName]'>
+								<RegistryValue Type='string' Value='' KeyPath='yes'/>
+							</RegistryKey>
+
+						</Component>
+
+					</Directory>
+				</Directory>
+			</Directory>
+		</Directory>
+
+		<!--Feature Sets-->
+		<Feature Id='Complete' Title='Google Drive Power BI Connector' 
+				 Description='Complete Connector' 
+				 Display='expand' Level='1'>
+			<ComponentRef Id='InstalledMez' />
+		</Feature>
+		
+		<!--User Interface-->
+		<UIRef Id="WixUI_Minimal" />
+		<WixVariable Id="WixUIDialogBmp" Value="dialog.bmp" />
+		<WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
+
+		<!--Upgrades-->
+		<!--NOTE: When upgrading, you need to increment Version and change Id
+              in the <Product> tags. -->
+		<MajorUpgrade
+		  AllowDowngrades='no'
+		  DowngradeErrorMessage="A newer version of this application is already installed."
+		  AllowSameVersionUpgrades='no' />
+
+	</Product>
+</Wix>

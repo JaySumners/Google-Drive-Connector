@@ -1,0 +1,19 @@
+﻿(fileId as text) =>
+    let
+        // Get file metadata. Make sure to include data.
+        response = 
+            Web.Contents(
+                "https://sheets.googleapis.com",
+                [
+                    RelativePath = "v4/spreadsheets/" & fileId,
+                    Query = [includeGridData = "true"]
+                ]
+            ),
+
+        // Parse json response
+        json = Json.Document(response),
+
+        // Get Sheets from Metadata
+        sheets = json[sheets]
+    in
+        sheets

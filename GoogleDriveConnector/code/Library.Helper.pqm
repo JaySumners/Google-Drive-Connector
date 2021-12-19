@@ -1,0 +1,36 @@
+////
+// Helper Functions
+////
+
+let
+    //
+    // Imported Functions
+    //
+
+    // Load common library functions
+    Extension.LoadFunction = (name as text) =>
+        let
+            binary = Extension.Contents(name),
+            asText = Text.FromBinary(binary)
+        in
+            Expression.Evaluate(asText, #shared),
+
+    //
+    // Local Functions
+    //
+
+    Extension.StringParser = (string as text) => 
+        /* Used to parse obfuscated strings.
+           Edit in your project if you want this.
+        /*
+        let
+            str = string
+        in
+            str
+in
+    //
+    // Exported Functions
+    //
+    [
+        Extension.StringParser = Extension.StringParser
+    ]

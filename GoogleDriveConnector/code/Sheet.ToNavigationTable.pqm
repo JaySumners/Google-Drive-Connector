@@ -1,0 +1,99 @@
+﻿//
+// Google Sheet Parsing
+//
+(sheets as list) =>
+    let
+        //
+        // Imported Functions
+        //
+
+        // Load common library functions
+        Extension.LoadFunction = (name as text) =>
+            let
+                binary = Extension.Contents(name),
+                asText = Text.FromBinary(binary)
+            in
+                Expression.Evaluate(asText, #shared),
+
+        // Load any helper function from the library
+        Table.ToNavigationTable = Extension.LoadFunction("Table.ToNavigationTable.pqm"),
+
+        //
+        // Local Functions
+        //
+        Parse_Google_Sheet = (sheet as record) =>
+            let
+                data = Parse_Google_Sheet_Data(sheet),
+                metadata = sheet[properties],
+                tbl = #table(
+                        type table 
+                            [
+                                    Key = number,
+                                    Name = text,
+                                    Data = text,
+                                    ItemKind = text,
+                                    ItemName = text,
+                                    IsLeaf = text
+                            ],
+                        {
+                            {
+                                metadata[sheetId],
+                                metadata[title],
+                                data,
+                                "Sheet",
+                                "Sheet",
+                                "true"
+                            }
+                        }
+                    )
+            in
+                tbl,
+
+        Parse_Google_Sheet_Data = (sheet as any) =>
+            let
+                // Get the Column Count
+                columnCount = Number.From(sheet[properties][gridProperties][columnCount]),
+                // Extract the data
+                data = sheet[data]{0},
+                // Extract the rows. This is an iterable list.
+                rows = data[rowData],
+                // Iterate over rows. Returns a list-of-lists
+                parsed_rows = List.Transform(rows, each Parse_Google_Sheet_Row(_, columnCount)),
+                // Convert to table
+                tbl = Table.FromRows(parsed_rows)
+            in
+                tbl,
+
+        Parse_Google_Sheet_Row = (row as any, columnCount as number) =>
+            let
+                // Get row data. This is a list of column values (left-to-right)
+                rw = row[values],
+                // Iterate over cells
+                cells = List.Transform(rw, each Parse_Google_Sheet_Cell(_)),
+                // Conform to sheet width
+                nullsToAdd = List.Repeat({null}, columnCount - List.Count(cells)),
+                conformedRow = List.Combine({cells, nullsToAdd})
+            in
+                conformedRow,
+
+        Parse_Google_Sheet_Cell = (cell as any) =>
+            let
+                // This could be done in an earlier funciton.
+                // but gives flexibility for future use.
+        
+                // Extract cell data
+                // if-statement is to deal with nulls
+                data =  if Record.HasFields(cell, "effectiveValue")
+                        then Record.FieldValues(cell[effectiveValue]){0}
+                        else null
+            in
+                data,
+
+        //
+        // Main Function
+        //
+        parsed_sheets = List.Transform(sheets, each Parse_Google_Sheet(_)),
+        combined_tbls = Table.Combine(parsed_sheets),
+        navTable = Table.ToNavigationTable(combined_tbls, {"Name"}, "Name", "Data", "ItemKind", "ItemName", "IsLeaf")
+in
+    navTable

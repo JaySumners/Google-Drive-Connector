@@ -1,0 +1,171 @@
+﻿<Project DefaultTargets="BuildExtension" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>
+    </ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>MyRootNamespace</RootNamespace>
+    <AssemblyName>MyAssemblyName</AssemblyName>
+    <EnableUnmanagedDebugging>False</EnableUnmanagedDebugging>
+    <AllowNativeQuery>False</AllowNativeQuery>
+    <AsAction>False</AsAction>
+    <FastCombine>False</FastCombine>
+    <ClearLog>False</ClearLog>
+    <ShowEngineTraces>False</ShowEngineTraces>
+    <ShowUserTraces>False</ShowUserTraces>
+    <LegacyRedirects>False</LegacyRedirects>
+    <SuppressRowErrors>False</SuppressRowErrors>
+    <SuppressCellErrors>False</SuppressCellErrors>
+    <MaxRows>1000</MaxRows>
+    <ExtensionProject>Yes</ExtensionProject>
+    <Name>GoogleDriveConnector</Name>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>false</DebugSymbols>
+    <!--Should be true, fix this when the debugger is implemented -->
+    <OutputPath>bin\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>false</DebugSymbols>
+    <OutputPath>bin\Release\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="mscorlib" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="GoogleDriveConnector.pq">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="resources.resx">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="code\File.MimeType.pqm">
+      <SubType>Content</SubType>
+    </Compile>
+    <Compile Include="code\Flat.Contents.pqm">
+      <SubType>Content</SubType>
+    </Compile>
+    <Compile Include="code\Library.Helper.pqm">
+      <SubType>Content</SubType>
+    </Compile>
+    <Compile Include="code\Library.OAuth.Flow.pqm">
+      <SubType>Content</SubType>
+    </Compile>
+    <Compile Include="code\Sheet.Contents.pqm">
+      <SubType>Content</SubType>
+    </Compile>
+    <Compile Include="code\Sheet.ToNavigationTable.pqm">
+      <SubType>Content</SubType>
+    </Compile>
+    <Compile Include="code\Table.ToNavigationTable.pqm">
+      <SubType>Content</SubType>
+    </Compile>
+    <Compile Include="config\client_id">
+      <SubType>Content</SubType>
+    </Compile>
+    <Compile Include="config\client_secret">
+      <SubType>Content</SubType>
+    </Compile>
+    <Compile Include="config\redirect_uri">
+      <SubType>Content</SubType>
+    </Compile>
+    <Compile Include="config\windowHeight">
+      <SubType>Content</SubType>
+    </Compile>
+    <Compile Include="config\windowWidth">
+      <SubType>Content</SubType>
+    </Compile>
+    <Compile Include="config\client_id.example">
+      <SubType>Content</SubType>
+    </Compile>
+    <Compile Include="config\client_secret.example">
+      <SubType>Content</SubType>
+    </Compile>
+    <Compile Include="config\string_parser">
+      <SubType>Content</SubType>
+    </Compile>
+    <Compile Include="config\string_parser.example">
+      <SubType>Content</SubType>
+    </Compile>
+    <Content Include="GoogleDriveConnector.query.pq">
+      <SubType>Code</SubType>
+    </Content>
+    <Compile Include="img\GoogleDrive16.png">
+      <SubType>Content</SubType>
+    </Compile>
+    <Compile Include="img\GoogleDrive20.png">
+      <SubType>Content</SubType>
+    </Compile>
+    <Compile Include="img\GoogleDrive24.png">
+      <SubType>Content</SubType>
+    </Compile>
+    <Compile Include="img\GoogleDrive32.png">
+      <SubType>Content</SubType>
+    </Compile>
+    <Compile Include="img\GoogleDrive40.png">
+      <SubType>Content</SubType>
+    </Compile>
+    <Compile Include="img\GoogleDrive48.png">
+      <SubType>Content</SubType>
+    </Compile>
+    <Compile Include="img\GoogleDrive64.png">
+      <SubType>Content</SubType>
+    </Compile>
+    <Compile Include="img\GoogleDrive80.png">
+      <SubType>Content</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="code" />
+    <Folder Include="config" />
+    <Folder Include="img" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <UsingTask TaskName="BuildExtension" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v12.0.dll">
+    <ParameterGroup>
+      <InputDirectory ParameterType="System.String" Required="true" />
+      <OutputFile ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Reference Include="System.IO.Compression" />
+      <Reference Include="System.IO.Compression.FileSystem" />
+      <Using Namespace="System.Globalization" />
+      <Using Namespace="System.IO.Compression " />
+      <Code Type="Fragment" Language="cs"><![CDATA[    
+    using(FileStream fileStream = File.Create(OutputFile))
+    using(ZipArchive archiveOut = new ZipArchive(fileStream, ZipArchiveMode.Create, false))
+    {
+        foreach(string fullPath in Directory.EnumerateFiles(InputDirectory))
+        {
+            string filename = Path.GetFileName(fullPath);
+        
+            archiveOut.CreateEntryFromFile(fullPath, filename, CompressionLevel.Optimal);
+        }
+    }
+]]></Code>
+    </Task>
+  </UsingTask>
+  <Target Name="BuildExtension" DependsOnTargets="ExtensionClean">
+    <ItemGroup>
+      <PQFiles Include="@(Compile)" Condition="'%(Extension)' == '.pq'" />
+    </ItemGroup>
+    <ItemGroup>
+      <NonPQFiles Include="@(Compile)" Condition="'%(Extension)' != '.pq'" />
+    </ItemGroup>
+    <MakeDir Directories="$(IntermediateOutputPath)" />
+    <MakeDir Directories="$(OutputPath)" />
+    <Copy SourceFiles="@(NonPQFiles)" DestinationFolder="$(IntermediateOutputPath)" />
+    <Copy SourceFiles="@(PQFiles)" DestinationFiles="@(PQFiles->'$(IntermediateOutputPath)%(RecursiveDir)%(FileName).m')" />
+    <BuildExtension InputDirectory="$(IntermediateOutputPath)" OutputFile="$(OutputPath)\$(ProjectName).mez" />
+  </Target>
+  <Target Name="ExtensionClean">
+    <!-- Remove obj folder -->
+    <RemoveDir Directories="$(BaseIntermediateOutputPath)" />
+    <!-- Remove bin folder -->
+    <RemoveDir Directories="$(OutputPath)" />
+  </Target>
+</Project>

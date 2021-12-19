@@ -1,0 +1,18 @@
+﻿(fileId as text) =>
+    let
+        // Provide the media content url
+        // byte_array is equivalent to File.Contents().
+        byte_array = 
+            Web.Contents(
+                "https://www.googleapis.com",
+                [
+                    RelativePath = "drive/v3/files/" & fileId,
+                    Query = 
+                        [
+                            alt = "media",
+                            supportsAllDrives = "true"
+                        ]
+                ]
+            )
+    in
+        byte_array
