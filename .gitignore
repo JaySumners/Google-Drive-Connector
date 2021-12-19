@@ -1,13 +1,17 @@
 ##### Solution-wide Files
 **/desktop.ini
 
+
 ##### Solution-level Files
 /.vs
-
 
 ################## DO NOT COMMENT OUT OR REMOVE THESE LINES ##################
 # Removing or commenting out these lines may make your credentials available
 # to the public (including scrapers). 
+
+##### Solution-wide files
+**/*.mez
+**/*.msi
 
 ##### GoogleDriveConnector
 # config files
