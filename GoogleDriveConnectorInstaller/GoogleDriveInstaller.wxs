@@ -1,8 +1,9 @@
 <?xml version='1.0' encoding='Windows-1252'?>
 
 <!--
-	You have to manually edit the Id.
-	It wasn't set to '*' to protect me from me.
+	DO NOT CHANGE THE UpgradeCode
+	The Id wasn't origianlly set to '*' to protect me from me.
+	But then you have to manually change it for updates.
 -->
 <Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
 	<Product
@@ -10,11 +11,11 @@
 	  Name='Google Drive Connector' Manufacturer='Open Source (github/JaySumners)'
 	  Language='1033' Codepage='1252'
 	  Version='0.0.1'
-	  Id='ACC3A30D-B391-47D1-ABCF-4DE15097CA82'>
+	  Id='*'>
 
 		<!--Package Description-->
 		<Package Id='*' Keywords='Installer' Description="Google Drive Connector Installer"
-		  Comments='Connector is open source software under MIT license. Compatibility is not guaranteed. Use at your own risk. Google Drive is a trademark of Google Inc. Use of this trademark is subject to Google Permissions.' Manufacturer='Acme Ltd.'
+		  Comments='Connector is open source software under MIT license. Compatibility is not guaranteed. Use at your own risk. Google Drive is a trademark of Google Inc. Use of this trademark is subject to Google Permissions.' Manufacturer='Open Source (github/JaySumners)'
 		  InstallerVersion='100' Languages='1033' Compressed='yes' SummaryCodepage='1252' />
 
 		<!--Install at User Level-->
